@@ -112,3 +112,55 @@ mvn test
 - Temp file cleanup
 - Real ODT file validation
 - Parameterized edge case testing
+
+---
+
+## How It Works
+
+### Analysis Workflow
+
+1. **Directory Scanning**  
+   Recursively searches the specified directory for `.odt` files using Java NIO.
+
+2. **Content Extraction**  
+   For each ODT file:
+   - Unzips the ODT (which is a ZIP archive)
+   - Parses `content.xml` and styles using Apache ODFDOM
+   - Extracts text from body, headers, and footers
+
+3. **Import Detection**  
+   Uses regex patterns to find `[import filename.odt]` blocks:
+   ```regex
+   \[import\s+([^]]+\.odt)\s*\]
+   ```
+   Validates filenames against security constraints.
+
+4. **Report Generation**  
+   Creates structured output (JSON/CSV) showing:
+   ```json
+   [
+     {
+       "document": "path/to/main.odt",
+       "imports": ["header.odt", "footer.odt"]
+     }
+   ]
+   ```
+
+### Replacement Workflow
+
+1. **Pattern Matching**  
+   Creates safe regex patterns for each old filename:
+   ```java
+   Pattern.compile("\\[import\\s*" + Pattern.quote(oldName) + "\\s*\\]", Pattern.CASE_INSENSITIVE);
+   ```
+
+2. **In-Place Modification**  
+   - Modifies text nodes in ODT XML content
+   - Preserves document structure/styles
+   - Validates modified files can be reopened in LibreOffice
+
+3. **File Saving**  
+   Re-zips modified content while maintaining:
+   - MIME type declarations
+   - File structure requirements
+   - XML schema validity
