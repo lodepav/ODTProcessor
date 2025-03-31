@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.odtprocessor.util.PathUtils.validateDirectory;
@@ -25,7 +24,7 @@ public class OdtFileFinder {
 		try (Stream<Path> pathStream = Files.walk(rootDir)) {
 			return pathStream
 					.filter(this::isOdtFile)
-					.collect(Collectors.toList());
+					.toList();
 		}
 	}
 

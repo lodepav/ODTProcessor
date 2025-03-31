@@ -29,8 +29,9 @@ public class CsvReportGenerator implements ReportGenerator {
 
 		// Use try-with-resources to ensure proper stream closure
 		try (BufferedWriter writer = Files.newBufferedWriter(outputPath);
-		     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-				     .withHeader(HEADERS))) {
+		     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.Builder.create()
+				     .setHeader(HEADERS)
+				     .build())) {
 
 			// Process each document's imports
 			for (DocumentImports doc : imports) {

@@ -81,8 +81,8 @@ public class CommandLineInterface {
 		// Parse output settings
 		if (cmd.hasOption("o")) {
 			config.setOutputPath(Path.of(cmd.getOptionValue("o")));
-		} else {
-			config.setRootDirectory(Path.of(cmd.getOptionValue("d")));
+		} else { // otherwise use Root directory
+			config.setOutputPath(Path.of(cmd.getOptionValue("d")));
 		}
 
 		if (cmd.hasOption("f")) {

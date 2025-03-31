@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Generates JSON reports documenting ODT file import relationships.
@@ -32,7 +31,7 @@ public class JsonReportGenerator implements ReportGenerator {
 			// Convert to List<Map> for Jackson serialization
 			List<Map<String, Object>> reportData = imports.stream()
 					.map(this::createEntry)
-					.collect(Collectors.toList());
+					.toList();
 
 			objectMapper.writeValue(outputPath.toFile(), reportData);
 		} catch (Exception e) {

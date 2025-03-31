@@ -7,7 +7,7 @@ import java.nio.file.Path;
  * about the target output file path where generation failed.
  */
 public class ReportGenerationException extends Exception {
-  private final Path outputPath;
+  private final transient Path outputPath;
 
   /**
    * @param message Description of the failure

@@ -32,15 +32,16 @@ class CsvReportGeneratorTest {
 		// Execute
 		generator.generateReport(imports, outputPath);
 
-		// Verify
-		try (CSVParser parser = CSVParser.parse(outputPath, StandardCharsets.UTF_8, CSVFormat.DEFAULT.withHeader())) {
+    // Verify
+    try (CSVParser parser =
+        CSVParser.parse(outputPath, StandardCharsets.UTF_8, CSVFormat.Builder.create().setHeader().build())) {
 			List<CSVRecord> records = parser.getRecords();
 
 			assertThat(records)
 					.hasSize(2)
-					.allSatisfy(record -> {
-						assertThat(record.get("Document")).isIn("main.odt", "empty.odt");
-						assertThat(record.get("Imported Files")).isIn("header.odt", "footer.odt");
+					.allSatisfy(singleRecord -> {
+						assertThat(singleRecord.get("Document")).isIn("main.odt", "empty.odt");
+						assertThat(singleRecord.get("Imported Files")).isIn("header.odt", "footer.odt");
 					});
 
 			assertThat(records.stream().map(r -> r.get("Document")))

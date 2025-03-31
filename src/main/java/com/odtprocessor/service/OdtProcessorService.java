@@ -55,18 +55,22 @@ public class OdtProcessorService {
 			List<Path> odtFiles = fileFinder.findOdtFiles(rootDir);
 
 			for (Path file : odtFiles) {
-				try {
-					String content = fileHandler.extractTextContent(file, true);
-					List<String> imports = importDetector.detectImports(content);
-					results.add(new DocumentImports(file, imports));
-				} catch (OdtProcessingException e) {
-					handleProcessingError(file, e);
-				}
+				processDocument(file, results);
 			}
 
 			return results;
 		} catch (IOException e) {
 			throw new ProcessingException("Failed to scan directory: " + rootDir, e);
+		}
+	}
+
+	private void processDocument(Path file, List<DocumentImports> results) throws ProcessingException {
+		try {
+			String content = fileHandler.extractTextContent(file, true);
+			List<String> imports = importDetector.detectImports(content);
+			results.add(new DocumentImports(file, imports));
+		} catch (OdtProcessingException e) {
+			handleProcessingError(file, e);
 		}
 	}
 
@@ -77,7 +81,6 @@ public class OdtProcessorService {
 	 * @throws ProcessingException For invalid input or processing failures
 	 */
 	public void updateImports(Path rootDir, Map<String, String> replacements) throws ProcessingException {
-
 		if (replacements == null || replacements.isEmpty()) {
 			throw new IllegalArgumentException("Replacements map cannot be empty");
 		}
@@ -85,15 +88,19 @@ public class OdtProcessorService {
 		try {
 			List<Path> odtFiles = fileFinder.findOdtFiles(rootDir);
 			for (Path file : odtFiles) {
-				TextReplacement replacement = replacerFactory.createReplacer(replacements);
-				try {
-					fileHandler.replaceTextContent(file, replacement, true);
-				} catch (OdtProcessingException e) {
-					handleProcessingError(file, e);
-				}
+				processImportReplacement(file, replacements);
 			}
 		} catch (Exception e) {
 			throw new ProcessingException("Import replacement failed", e);
+		}
+	}
+
+	private void processImportReplacement(Path file, Map<String, String> replacements) throws ProcessingException {
+		TextReplacement replacement = replacerFactory.createReplacer(replacements);
+		try {
+			fileHandler.replaceTextContent(file, replacement, true);
+		} catch (OdtProcessingException e) {
+			handleProcessingError(file, e);
 		}
 	}
 
